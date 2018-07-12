@@ -3,6 +3,7 @@
 ### Prerequisite
 
 * Node.js ^8.0
+* NPM
 
 
 ### Install dependencies
