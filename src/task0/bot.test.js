@@ -65,18 +65,20 @@ describe("Test command", () => {
   it("should move 1 unit to EAST", () => {
     bot.executeCommand("MOVE");
     expect(bot.getX()).toEqual(1);
+    expect(bot.getDirection()).toEqual("EAST");
   });
-  it("should turn EAST to NORTH when execute LEFT", () => {
+
+  it("should turn from EAST to NORTH when execute LEFT", () => {
     expect(bot.getDirection()).toEqual("EAST");
     bot.executeCommand("LEFT");
     expect(bot.getDirection()).toEqual("NORTH");
   });
-  it("should turn EAST to SOUTH when execute RIGHT", () => {
+  it("should turn from EAST to SOUTH when execute RIGHT", () => {
     expect(bot.getDirection()).toEqual("EAST");
     bot.executeCommand("RIGHT");
     expect(bot.getDirection()).toEqual("SOUTH");
   });
-  it("should turn EAST to WEST when execute RIGHT RIGHT", () => {
+  it("should turn from EAST to WEST when execute RIGHT RIGHT", () => {
     expect(bot.getDirection()).toEqual("EAST");
     bot.executeCommand("RIGHT");
     bot.executeCommand("RIGHT");
@@ -88,7 +90,17 @@ describe("Test command", () => {
     expect(console.log).toBeCalledWith("0,0,EAST");
   });
 
-  it("should prompt a warning when bot is about to fall off table, and remain current place", () => {
+  it("should turn from EAST to NORTH and move 1 unit to NORTH, when execute LEFT MOVE ", () => {
+    bot.executeCommand("LEFT");
+    bot.executeCommand("MOVE");
+    expect(bot.getState()).toEqual({
+      x: 0,
+      y: 1,
+      direction: "NORTH"
+    });
+  });
+
+  it("should prompt a warning when bot is about to fall off table and remain current place when turn right and move", () => {
     bot.executeCommand("RIGHT");
     bot.executeCommand("MOVE");
     expect(console.warn).toBeCalledWith(OFF_TABLE_WARNING);

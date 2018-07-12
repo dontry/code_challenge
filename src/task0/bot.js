@@ -104,7 +104,7 @@ Bot.prototype = (function() {
         this.x = x;
       }
     },
-    setY: function(y) {
+    setY(y) {
       if (y === null || y === undefined) {
         throw "position y is null";
       } else if (typeof y !== "number") {
@@ -117,21 +117,21 @@ Bot.prototype = (function() {
         this.y = y;
       }
     },
-    getState: function() {
+    getState() {
       return {
         x: this.x,
         y: this.y,
         direction: this.direction
       };
     },
-    setDirection: function(direction) {
+    setDirection(direction) {
       if (DIRECTION.hasOwnProperty(direction)) {
         this.direction = direction;
       } else {
         throw "Invalid direction";
       }
     },
-    executeCommand: function(action, payload) {
+    executeCommand(action, payload) {
       const curState = this.getState();
       try {
         switch (action) {
