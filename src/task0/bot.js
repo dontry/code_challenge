@@ -2,12 +2,7 @@
 
 const UPPER_BOUNDARY = 4;
 const LOWER_BOUNDARY = 0;
-const DIRECTION = {
-  EAST: 0,
-  NORTH: 90,
-  WEST: 180,
-  SOUTH: 270
-};
+const DIRECTION = ["EAST", "SOUTH", "WEST", "NORTH"];
 const ACTION = {
   MOVE: "MOVE",
   LEFT: "LEFT",
@@ -23,6 +18,7 @@ const INITIAL_STATE = {
 };
 
 const OFF_TABLE_WARNING = require("./contants").OFF_TABLE_WARNING;
+const INVALID_DIRECTION = require("./contants").INVALID_DIRECTION;
 
 function Bot(x, y, direction) {
   this.x = x || INITIAL_STATE.x;
@@ -60,18 +56,13 @@ Bot.prototype = (function() {
   }
 
   function turnRight() {
-    const curDegree = convertDirectionToDegree(this.getDirection());
-    const tmp = curDegree - 90;
-    const newDegree = tmp < 0 ? 360 + tmp : tmp % 360;
-    const newDirection = convertDegreeToDirection(newDegree);
+    const newDirection = DIRECTION[(DIRECTION.indexOf(this.direction) + 1) % 4];
     this.setDirection(newDirection);
   }
 
   function turnLeft() {
-    const curDegree = convertDirectionToDegree(this.getDirection());
-    const tmp = curDegree + 90;
-    const newDegree = tmp < 0 ? 360 + tmp : tmp % 360;
-    const newDirection = convertDegreeToDirection(newDegree);
+    const newDirection =
+      DIRECTION[(((DIRECTION.indexOf(this.direction) - 1) % 4) + 4) % 4]; //mod negative number ((x%n)+n)%n
     this.setDirection(newDirection);
   }
 
@@ -90,33 +81,8 @@ Bot.prototype = (function() {
     getDirection() {
       return this.direction;
     },
-
-    setX(x) {
-      if (x === null || x === undefined) {
-        throw "position x is null/undefined";
-      } else if (typeof x !== "number") {
-        throw "type of x is invalid";
-      } else if (!Number.isInteger(x)) {
-        throw "position x is not integer";
-      } else if (x < LOWER_BOUNDARY || x > UPPER_BOUNDARY) {
-        throw OFF_TABLE_WARNING;
-      } else {
-        this.x = x;
-      }
-    },
-    setY(y) {
-      if (y === null || y === undefined) {
-        throw "position y is null";
-      } else if (typeof y !== "number") {
-        throw "y type is invalid";
-      } else if (!Number.isInteger(y)) {
-        throw "position y is not integer";
-      } else if (y < LOWER_BOUNDARY || y > UPPER_BOUNDARY) {
-        throw OFF_TABLE_WARNING;
-      } else {
-        this.y = y;
-      }
-    },
+    setX: setPosition("x"),
+    setY: setPosition("y"),
     getState() {
       return {
         x: this.x,
@@ -125,11 +91,8 @@ Bot.prototype = (function() {
       };
     },
     setDirection(direction) {
-      if (DIRECTION.hasOwnProperty(direction)) {
-        this.direction = direction;
-      } else {
-        throw "Invalid direction";
-      }
+      if (DIRECTION.indexOf(direction) === -1) throw INVALID_DIRECTION;
+      this.direction = direction;
     },
     executeCommand(action, payload) {
       const curState = this.getState();
@@ -167,14 +130,20 @@ Bot.prototype = (function() {
   };
 })();
 
-function convertDirectionToDegree(direction) {
-  return DIRECTION[direction];
-}
-
-function convertDegreeToDirection(degree) {
-  for (const dir in DIRECTION) {
-    if (DIRECTION[dir] === degree) return dir;
-  }
+function setPosition(key) {
+  return function(val) {
+    if (val === null || val === undefined) {
+      throw `position ${key} is null/undefined`;
+    } else if (typeof val !== "number") {
+      throw `type of ${key} is invalid`;
+    } else if (!Number.isInteger(val)) {
+      throw `position ${key} is not integer`;
+    } else if (val < LOWER_BOUNDARY || val > UPPER_BOUNDARY) {
+      throw OFF_TABLE_WARNING;
+    } else {
+      this[key] = val;
+    }
+  };
 }
 
 module.exports = Bot;

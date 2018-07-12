@@ -10,7 +10,7 @@ var rl = readline.createInterface({
 
 var bot = new Bot();
 
-rl.write("Input command to move the bot\n");
+rl.write("Input command to move the bot(press q to exit)\n");
 rl.prompt();
 
 rl.on("line", function(input) {
@@ -20,7 +20,12 @@ rl.on("line", function(input) {
     .split(" ");
   var action = command[0];
   var payload = command[1];
-  if (action !== "PLACE" && payload !== undefined) {
+  if (action === "Q") {
+    process.exit(0);
+  } else if (
+    (action !== "PLACE" && payload !== undefined) ||
+    (action === "PLACE" && payload === undefined)
+  ) {
     console.error(INVALID_COMMAND);
   } else {
     bot.executeCommand(action, payload);
